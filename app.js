@@ -1,4 +1,5 @@
-import { removeFromFavorites, addToFavorites } from "/favorites.js"
+import { removeFromFavorites, addToFavorites, toggleFavorite } from "/favorites.js"
+import { scrollToTop } from "/helpers.js";
 
 const endpoint = "http://localhost:3000";
 let selectedArtist;
@@ -39,7 +40,6 @@ function displayArtists(list) {
               <button class="btn-update-artist">Update</button>
               <button class="btn-delete-artist">Delete</button>
               <button class="btn-favorite-artist">Fav</button>
-              <button class="btn-unfavorite-artist">UnFav</button>
           </div>
         </article>
         `
@@ -47,13 +47,14 @@ function displayArtists(list) {
 
     document.querySelector("#artist-grid article:last-child .btn-delete-artist").addEventListener("click", () => deleteArtist(artist.id));
     document.querySelector("#artist-grid article:last-child .btn-update-artist").addEventListener("click", () => selectArtist(artist));
-    document.querySelector("#artist-grid article:last-child .btn-favorite-artist").addEventListener("click", () => addToFavorites(artist.id));
-    document.querySelector("#artist-grid article:last-child .btn-unfavorite-artist").addEventListener("click", () => removeFromFavorites(artist.id));
+    document.querySelector("#artist-grid article:last-child .btn-favorite-artist").addEventListener("click", () => toggleFavorite(artist.id));
   }
 };
 
 
-// CRUD functions //
+// CRUD FUNCTIONS //
+
+// Create artist //
 async function createArtist(event) {
   event.preventDefault();
 
@@ -82,6 +83,7 @@ async function createArtist(event) {
   }
 };
 
+// Select artist //
 function selectArtist(artist) {
   selectedArtist = artist;
   const form = document.querySelector("#form-update");
@@ -96,6 +98,7 @@ function selectArtist(artist) {
   form.scrollIntoView({ behavior: "smooth" });
 }
 
+// Update artist //
 async function updateArtist(event) {
   event.preventDefault();
 
@@ -123,18 +126,15 @@ async function updateArtist(event) {
   }
 }
 
+// Delete artist //
 async function deleteArtist(id) {
   const response = await fetch(`${endpoint}/artists/${id}`, {
       method: "DELETE",
   });
   if (response.ok) {
     updateArtistGrid();
+    scrollToTop();
   }
-}
-
-
-function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 export { updateArtistGrid, endpoint }
