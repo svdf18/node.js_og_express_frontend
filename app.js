@@ -1,5 +1,5 @@
 import { toggleFavorite, getFavoriteArtistIds } from "/favorites.js"
-import { scrollToTop } from "/helpers.js";
+import { scrollToTop, populateLabelDropdown } from "/helpers.js";
 
 const endpoint = "http://localhost:3000";
 let selectedArtist;
@@ -7,12 +7,20 @@ let currentArtistList = "all";
 
 window.addEventListener("load", initApp);
 
-// Init and eventlisteners //
+// INIT & EVENTLISTENERS //
 
-function initApp() {
+async function initApp() { 
+  const artists = await readArtists();
+  const labelDropdown = document.querySelector("#label-dropdown");
+
+  populateLabelDropdown(artists);
   updateArtistGrid();
+
+  // Forms //
   document.querySelector("#form-create").addEventListener("submit", createArtist);
   document.querySelector("#form-update").addEventListener("submit", updateArtist);
+  
+  // Header buttons //
   document.querySelector
     ("#display-all-artists").addEventListener
     ("click", () => {currentArtistList = "all";
@@ -23,13 +31,20 @@ function initApp() {
     ("click", () => {currentArtistList = "favorites";
     updateArtistGrid();
   });
+
+  // Label dropdown
+  labelDropdown.addEventListener("change", () => {
+    const selectedLabel = labelDropdown.value;
+    console.log("Selected Label:", selectedLabel);
+    updateArtistGrid(selectedLabel);
+  });
 }
 
-// Read and update //
+// READ & UPDATE //
 
-async function updateArtistGrid() {
+async function updateArtistGrid(selectedLabel) {
   const artists = await readArtists();
-  displayArtists(artists);
+  displayArtists(artists, selectedLabel);
 }
 
 async function readArtists() {
@@ -38,9 +53,9 @@ async function readArtists() {
   return data;
 }
 
-// Display all artists or favorite artists //
+// Display all artists, favorite artists & filter by label//
 
-async function displayArtists(list) {
+async function displayArtists(list, selectedLabel) {
   document.querySelector("#artist-grid").innerHTML = "";
 
   let filteredList = list;
@@ -49,6 +64,10 @@ async function displayArtists(list) {
   if (currentArtistList === "favorites") {
     favoriteArtistIds = await getFavoriteArtistIds();
     filteredList = list.filter(artist => favoriteArtistIds.includes(artist.id));
+  }
+
+  if (selectedLabel && selectedLabel !== "All") {
+    filteredList = filteredList.filter(artist => artist.labels.includes(selectedLabel));
   }
 
   for (const artist of filteredList) {
