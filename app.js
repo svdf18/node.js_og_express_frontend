@@ -7,6 +7,8 @@ let currentArtistList = "all";
 
 window.addEventListener("load", initApp);
 
+// Init and eventlisteners //
+
 function initApp() {
   updateArtistGrid();
   document.querySelector("#form-create").addEventListener("submit", createArtist);
@@ -23,6 +25,8 @@ function initApp() {
   });
 }
 
+// Read and update //
+
 async function updateArtistGrid() {
   const artists = await readArtists();
   displayArtists(artists);
@@ -33,6 +37,8 @@ async function readArtists() {
   const data = await response.json();
   return data;
 }
+
+// Display all artists or favorite artists //
 
 async function displayArtists(list) {
   document.querySelector("#artist-grid").innerHTML = "";
