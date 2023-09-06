@@ -21,15 +21,21 @@ async function initApp() {
   document.querySelector("#form-update").addEventListener("submit", updateArtist);
   
   // Header buttons //
-  document.querySelector
-    ("#display-all-artists").addEventListener
-    ("click", () => {currentArtistList = "all";
+  const allArtistsButton = document.querySelector("#display-all-artists");
+  const favoriteArtistsButton = document.querySelector("#display-favorite-artists");
+  
+  allArtistsButton.addEventListener("click", () => {
+    currentArtistList = "all";
     updateArtistGrid();
+    allArtistsButton.classList.add("active-button");
+    favoriteArtistsButton.classList.remove("active-button");
   });
-  document.querySelector
-    ("#display-favorite-artists").addEventListener
-    ("click", () => {currentArtistList = "favorites";
+  
+  favoriteArtistsButton.addEventListener("click", () => {
+    currentArtistList = "favorites";
     updateArtistGrid();
+    favoriteArtistsButton.classList.add("active-button");
+    allArtistsButton.classList.remove("active-button");
   });
 
   // Label dropdown
@@ -76,8 +82,8 @@ async function displayArtists(list, selectedLabel) {
         <article>
           <img src="${artist.image}"></img>
           <h2>${artist.name}</h2>
-          <p>${artist.birthdate}</p>
-          <p>${artist.activeSince}</p>
+          <p>Birthdate: ${artist.birthdate}</p>
+          <p>Active since: ${artist.activeSince}</p>
           <p>Genres: ${artist.genres.join(', ')}</p>
           <p>Labels: ${artist.labels.join(', ')}</p>
           <p>${artist.shortDescription}</p>
