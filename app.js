@@ -1,8 +1,9 @@
-import { removeFromFavorites, addToFavorites, toggleFavorite } from "/favorites.js"
+import { toggleFavorite, getFavoriteArtistIds } from "/favorites.js"
 import { scrollToTop } from "/helpers.js";
 
 const endpoint = "http://localhost:3000";
 let selectedArtist;
+let currentArtistList = "all";
 
 window.addEventListener("load", initApp);
 
@@ -10,6 +11,16 @@ function initApp() {
   updateArtistGrid();
   document.querySelector("#form-create").addEventListener("submit", createArtist);
   document.querySelector("#form-update").addEventListener("submit", updateArtist);
+  document.querySelector
+    ("#display-all-artists").addEventListener
+    ("click", () => {currentArtistList = "all";
+    updateArtistGrid();
+  });
+  document.querySelector
+    ("#display-favorite-artists").addEventListener
+    ("click", () => {currentArtistList = "favorites";
+    updateArtistGrid();
+  });
 }
 
 async function updateArtistGrid() {
@@ -23,9 +34,18 @@ async function readArtists() {
   return data;
 }
 
-function displayArtists(list) {
+async function displayArtists(list) {
   document.querySelector("#artist-grid").innerHTML = "";
-  for (const artist of list) {
+
+  let filteredList = list;
+  let favoriteArtistIds = [];
+
+  if (currentArtistList === "favorites") {
+    favoriteArtistIds = await getFavoriteArtistIds();
+    filteredList = list.filter(artist => favoriteArtistIds.includes(artist.id));
+  }
+
+  for (const artist of filteredList) {
     document.querySelector("#artist-grid").insertAdjacentHTML(
       "beforeend", `
         <article>
@@ -39,17 +59,18 @@ function displayArtists(list) {
           <div class="btns">
               <button class="btn-update-artist">Update</button>
               <button class="btn-delete-artist">Delete</button>
-              <button class="btn-favorite-artist">Fav</button>
+              <button class="btn-toggle-favorite-artist">Fav</button>
           </div>
         </article>
-        `
+      `
     );
 
     document.querySelector("#artist-grid article:last-child .btn-delete-artist").addEventListener("click", () => deleteArtist(artist.id));
     document.querySelector("#artist-grid article:last-child .btn-update-artist").addEventListener("click", () => selectArtist(artist));
-    document.querySelector("#artist-grid article:last-child .btn-favorite-artist").addEventListener("click", () => toggleFavorite(artist.id));
+    document.querySelector("#artist-grid article:last-child .btn-toggle-favorite-artist").addEventListener("click", () => toggleFavorite(artist.id));
   }
-};
+}
+
 
 
 // CRUD FUNCTIONS //

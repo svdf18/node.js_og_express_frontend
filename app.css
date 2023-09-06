@@ -169,6 +169,22 @@ button {
   max-width: 380px;
 }
 
+.btn-toggle-favorite-artist {
+  font-weight: 300;
+  font-size: 1em;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  border-radius: 0;
+  color: green;
+  background-color: var(--green);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.5em 1em;
+  width: 100%;
+  max-width: 380px;
+}
+
 input {
   margin: 1em auto;
   width: 100%;
@@ -177,4 +193,16 @@ input {
   border: 2px solid var(--green);
   display: block;
   background: var(--white);
+}
+
+/* ---------- toggle button styling ---------- */
+
+.btn-toggle-favorite-artist.favorite-icon-selected {
+  color: white !important;
+  background-color: green !important;
+}
+
+.btn-toggle-favorite-artist.favorite-icon-unselected {
+  color: green !important;
+  background-color: white !important;
 }
